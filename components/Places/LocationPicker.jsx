@@ -1,15 +1,34 @@
 import { StyleSheet, Text, View, Alert, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import OutlinedButton from '../UI/OutlinedButton'
 import { Colors } from '../../constants/colors'
 import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from 'expo-location'
 import { getMapPreview } from '../../util/location'
+import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native'
 
 
 
-const LocationPicker = () => {
+const LocationPicker = ({onPickLocation}) => {
     const [pickedLocation, setPickedLocation] = useState()
     const [locationPermissionInformation, requestPermission] = useForegroundPermissions();
+    
+    const isFocused = useIsFocused();
+    const navigation = useNavigation();
+    const route = useRoute();
+    
+    useEffect(() => {
+        if (isFocused && route.params){
+            const mapPickedLocation = {
+                lat: route.params.pickedLat,
+                lng: route.params.pickedLng
+            };
+            setPickedLocation(mapPickedLocation)
+        }
+    },[route, isFocused]);
+
+    useEffect(() => {
+        onPickLocation(pickedLocation)
+    },[pickedLocation, onPickLocation])
 
     async function verifyPermissions() {
         if (locationPermissionInformation.status === PermissionStatus.UNDETERMINED ){
@@ -42,7 +61,7 @@ const LocationPicker = () => {
     }
 
     function pickOnMapHandler() {
-
+        navigation.navigate('Map');
     }
 
     let locationPreview = <Text>No location picket yet.</Text>
