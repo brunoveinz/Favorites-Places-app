@@ -49,16 +49,16 @@ export async function fetchPlaces() {
   const places = [];  
   result.forEach(record => {
     const place = new Place(
-      record.id,
       record.title,
       record.imageUri,
       {
         address: record.address,
         lat: record.lat,
-        lng: record.lon // Asegúrate de usar `lng` si es que es el nombre correcto
-      }
+        lng: record.lon 
+      },
+      record.id,
+
     );
-    console.log(record.id)
     places.push(place);
   });
   
@@ -72,7 +72,6 @@ export async function fetchPlaceDetails(id) {
       'SELECT * FROM places WHERE id = ?',
       [id]
   );
-  console.log(dbPlace)
   const place = new Place(
       dbPlace.title,
       dbPlace.imageUri,
